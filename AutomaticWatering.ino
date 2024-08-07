@@ -1,9 +1,9 @@
-#include "Solenoid.h"
+#include "PlantController.h"
 int FLOW_PIN = 7;
 double flowRate;
 volatile int count;
 
-Solenoid* solenoids[2] = {nullptr};
+PlantController* plants[2] = {nullptr};
 
 
 void setup() 
@@ -15,20 +15,24 @@ void setup()
   attachInterrupt(0, Flow, RISING);
   Serial.begin(9600);
   // Solenoids use Serial so they must be created after.
-  solenoids[0] = new Solenoid(2, 1);
-  solenoids[1] = new Solenoid(4, 2);
+  plants[0] = new PlantController(2, A0, 1);
+  plants[1] = new PlantController(4, A1, 2);
 }
 
 void loop() 
 {
-  if (digitalRead(9) == 0)
+  Serial.print("Plant 0 Current moisture: ");
+  Serial.println(plants[0]->GetMoisture());
+
+  if (digitalRead(9) == LOW)
   {
-    solenoids[0]->ToggleSolenoid();
+    plants[0]->ToggleSolenoid();
   }
-  if (digitalRead(10) == 0)
+  if (digitalRead(10) == LOW)
   {
-    solenoids[1]->ToggleSolenoid();
+    plants[1]->ToggleSolenoid();
   }
+  delay(150);
 }
 
 void Flow()
